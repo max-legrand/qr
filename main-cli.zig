@@ -7,10 +7,10 @@ const cli = @import("src/cli.zig");
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    const args = try std.process.argsAlloc(allocator);
+    var args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
 
-    const options = cli.parseCliArgs(args);
+    const options = cli.parseCliArgs(&args);
 
     const matrix = try qr_code.create(allocator, options);
     defer matrix.deinit();

@@ -79,8 +79,7 @@ const Segment = struct {
     }
 
     pub fn getLengthBits(self: Self, version: usize) usize {
-        const modeBits = @bitSizeOf(@typeInfo(ModeIndicator).Enum.tag_type);
-        return self.prefix.getLength() + modeBits + getCharCountNumBits(version, self.mode) + self.data.getLength();
+        return @bitSizeOf(u4) + getCharCountNumBits(version, self.mode) + self.data.getLength();
     }
 
     pub fn deinit(self: Self) void {

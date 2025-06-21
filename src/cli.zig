@@ -81,14 +81,14 @@ fn parseQuietZoneSize(args: [][:0]const u8, i: *usize, quietZoneSize: *?usize) v
     quietZoneSize.* = parsedQzone;
 }
 
-pub fn parseCliArgs(args: [][:0]const u8) CreateOptions {
+pub fn parseCliArgs(args: *[][:0]const u8) CreateOptions {
     var message: ?[:0]const u8 = null;
     var ecLevel: ?ErrorCorrectionLevel = null;
     var quietZoneSize: ?usize = null;
 
     var i: usize = 1;
     while (i < args.len) : (i += 1) {
-        const arg = args[i];
+        const arg = args.*[i];
 
         if (strEq(arg, "-h") or strEq(arg, "--help")) {
             printUsage();
@@ -96,16 +96,16 @@ pub fn parseCliArgs(args: [][:0]const u8) CreateOptions {
         }
 
         if (strEq(arg, "-e") or strEq(arg, "--error")) {
-            parseECLevel(args, &i, &ecLevel);
+            parseECLevel(args.*, &i, &ecLevel);
             continue;
         }
 
         if (strEq(arg, "-q") or strEq(arg, "--qzone")) {
-            parseQuietZoneSize(args, &i, &quietZoneSize);
+            parseQuietZoneSize(args.*, &i, &quietZoneSize);
             continue;
         }
 
-        parseMessage(args, &i, &message);
+        parseMessage(args.*, &i, &message);
     }
 
     if (message == null) {

@@ -2,14 +2,28 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
+    const target = b.standardTargetOptions(.{});
 
     const exe = b.addExecutable(.{
         .name = "qr",
         .root_source_file = b.path("main-cli.zig"),
-        .target = b.standardTargetOptions(.{}),
+        .target = target,
         .optimize = optimize,
     });
     b.installArtifact(exe);
+
+    const lib_mod = b.addModule("qr", .{
+        .root_source_file = b.path("src/index.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const lib = b.addLibrary(.{
+        .linkage = .static,
+        .name = "qr",
+        .root_module = lib_mod,
+    });
+    b.installArtifact(lib);
 
     const wasm = b.addExecutable(.{
         .name = "qr",
