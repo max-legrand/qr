@@ -31,7 +31,7 @@ Examples:
 
 ## Requirements
 
-- Zig 0.13+
+- Zig 0.15+
 
 ## Run
 
@@ -59,4 +59,3 @@ $ cp ./zig-out/qr.wasm web/
 
 The word "QR Code" is registered trademark of:
 DENSO WAVE INCORPORATED
-
