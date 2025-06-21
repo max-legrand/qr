@@ -5,6 +5,7 @@ const seg = @import("segment.zig");
 const format_info = @import("format-info.zig");
 const utils = @import("utils.zig");
 const mask_pattern = @import("mask.zig");
+const png = @import("png.zig");
 
 const BitMatrix = @import("bit-matrix.zig").BitMatrix;
 const BitBuffer = @import("bit-buffer.zig").BitBuffer;
@@ -343,6 +344,28 @@ pub fn create(allocator: Allocator, options: CreateOptions) !BitMatrix {
     try addQuietZone(&pixels, options.quietZoneSize);
 
     return pixels;
+}
+
+pub fn createQrCodeImage(allocator: std.mem.Allocator, content: []const u8) ![]u8 {
+    const matrix = try create(allocator, .{
+        .content = content,
+        .ecLevel = .M,
+        .quietZoneSize = 1,
+    });
+    const data = try allocator.alloc([]u8, matrix.size);
+    defer allocator.free(data);
+    for (0..matrix.size) |row| {
+        data[row] = try allocator.alloc(u8, matrix.size);
+        for (0..matrix.size) |col| {
+            const value = matrix.get(row, col);
+            switch (value) {
+                0 => data[row][col] = 255,
+                1 => data[row][col] = 0,
+            }
+        }
+    }
+    const image_bytes = try png.createImage(allocator, data);
+    return image_bytes;
 }
 
 test "no memory leaks" {
